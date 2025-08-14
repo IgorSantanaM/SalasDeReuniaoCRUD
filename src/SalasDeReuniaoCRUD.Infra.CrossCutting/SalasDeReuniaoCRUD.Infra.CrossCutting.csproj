@@ -8,12 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.0.0" />
-    <PackageReference Include="MediatR" Version="13.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+	  <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+	  <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SalasDeReuniaoCRUD.Application\SalasDeReuniaoCRUD.Application.csproj" />
+    <ProjectReference Include="..\SalasDeReuniaoCRUD.Infra.Data\SalasDeReuniaoCRUD.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>

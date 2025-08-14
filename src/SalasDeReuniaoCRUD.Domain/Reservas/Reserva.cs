@@ -1,5 +1,6 @@
 ﻿using SalasDeReuniaoCRUD.Domain.Core.Exceptions;
 using SalasDeReuniaoCRUD.Domain.Core.Model;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SalasDeReuniaoCRUD.Domain.Reservas
 {
@@ -7,7 +8,11 @@ namespace SalasDeReuniaoCRUD.Domain.Reservas
     {
         public string Titulo { get; set; } = string.Empty;
         public string Responsavel { get; set; } = string.Empty;
+
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime DataInicio { get; set; }
+
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime DataFim { get; set; }
         public int ParticipantesPrevistos { get; set; }
         public decimal ValorHora { get; set; }
@@ -50,9 +55,6 @@ namespace SalasDeReuniaoCRUD.Domain.Reservas
             Desconto = desconto;
 
             ValorTotal = CalcularValorTotal();
-
-            if (ValorTotal < 0)
-                throw new DomainException("O desconto não pode ser maior que o valor total da reserva.");
         }
 
         public void Update(string titulo, string responsavel, DateTime dataInicio, DateTime dataFim, int participantesPrevistos, decimal valorHora, decimal desconto)
@@ -85,10 +87,17 @@ namespace SalasDeReuniaoCRUD.Domain.Reservas
 
         private decimal CalcularValorTotal()
         {
+            if (Desconto < 0 || Desconto > 30)
+                throw new DomainException("O percentual de desconto deve estar entre 0 e 30.");
+
             TimeSpan duracao = DataFim - DataInicio;
             decimal totalHoras = (decimal)duracao.TotalHours;
             decimal subTotal = totalHoras * ValorHora;
-            return subTotal * (Desconto / 100);
+
+            decimal valorDoDesconto = subTotal * (Desconto / 100);
+            decimal valorTotal = subTotal - valorDoDesconto;
+
+            return valorTotal;
         }
     }
 }
