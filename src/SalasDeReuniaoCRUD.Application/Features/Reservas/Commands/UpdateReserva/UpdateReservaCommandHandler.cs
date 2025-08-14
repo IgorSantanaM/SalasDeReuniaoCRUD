@@ -21,11 +21,14 @@ namespace SalaDeReuniaoCRUD.Application.Features.Reservas.Commands.UpdateReserva
         }
         public async Task Handle(UpdateReservaCommand request, CancellationToken cancellationToken)
         {
-            Reserva reserva = await _reservaRepository.GetByIdAsync(request.Id);
+            Reserva? reserva = await _reservaRepository.GetByIdAsync(request.Id);
             if (reserva == null!)
                 throw new NotFoundException(nameof(Reserva), request.Id);
 
             reserva.Update(request.Titulo, request.Responsavel, request.DataInicio, request.DataFim, request.ParticipantesPrevistos, request.ValorHora, request.Desconto);
+
+            reserva.DataInicio = reserva.DataInicio.ToLocalTime();
+            reserva.DataFim = reserva.DataFim.ToLocalTime();
             _reservaRepository.Update(reserva);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

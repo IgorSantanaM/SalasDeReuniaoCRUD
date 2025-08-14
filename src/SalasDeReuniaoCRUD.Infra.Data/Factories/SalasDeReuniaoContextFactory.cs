@@ -15,7 +15,7 @@ namespace SalasDeReuniaoCRUD.Infra.Data.Factories
                .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<SalasDeReuniaoContext>();
-            var connectionString = configuration.GetConnectionString("Postgres");
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {

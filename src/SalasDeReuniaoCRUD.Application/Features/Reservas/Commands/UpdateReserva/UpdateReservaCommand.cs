@@ -15,5 +15,4 @@ public record UpdateReservaCommand(
     DateTime DataFim,
     int ParticipantesPrevistos,
     decimal ValorHora,
-    decimal Desconto,
-    decimal ValorTotal) : IRequest;
+    decimal Desconto) : IRequest;

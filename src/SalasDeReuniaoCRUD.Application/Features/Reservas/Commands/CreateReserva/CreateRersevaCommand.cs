@@ -13,6 +13,5 @@ namespace SalaDeReuniaoCRUD.Application.Features.Reservas.Commands.CreateReserva
         DateTime DataFim,
         int ParticipantesPrevistos,
         decimal ValorHora, 
-        decimal Desconto, 
-        decimal ValorTotal) : IRequest<int>;
+        decimal Desconto) : IRequest<int>;
 }
