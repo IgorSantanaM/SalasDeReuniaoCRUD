@@ -1,14 +1,11 @@
 ﻿using Dapper;
 using Microsoft.EntityFrameworkCore;
+using SalasDeReuniaoCRUD.Domain.Common;
 using SalasDeReuniaoCRUD.Domain.Enums;
 using SalasDeReuniaoCRUD.Domain.Reservas;
 using SalasDeReuniaoCRUD.Infra.Data.Contexts;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SalasDeReuniaoCRUD.Infra.Data.Repositories
 {
@@ -34,45 +31,71 @@ namespace SalasDeReuniaoCRUD.Infra.Data.Repositories
             return await _dbConnection.QuerySingleOrDefaultAsync<Reserva>(sql, new { Id = id });
         }
 
-        public async Task<IEnumerable<Reserva>> GetReservasByDateRangeAsync(DateTime startDate, DateTime endDate)
+        public async Task<PagedResult<Reserva>> GetPagedAsync(Status? status, DateTime? startDate, DateTime? endDate, int page, int pageSize)
         {
-            const string sql = @"SELECT * FROM ""Reservas"" WHERE ""DataInicio"" >= @StartDate AND ""DataFim"" <= @EndDate;";
-            return await _dbConnection.QueryAsync<Reserva>(sql, new { StartDate = startDate, EndDate = endDate });
-        }
+            var parameters = new DynamicParameters();
+            var whereClauses = new List<string>();
 
-        public async Task<IEnumerable<Reserva>> GetReservasByStatus(Status status)
-        {
-            var now = DateTime.Now;
-            string sql;
-            object parameters;
+            var countSql = new StringBuilder("SELECT COUNT(*) FROM \"Reservas\"");
+            var selectSql = new StringBuilder("SELECT * FROM \"Reservas\"");
 
-            switch (status)
+            if (startDate.HasValue)
             {
-                case Status.EmAndamento:
-                    sql = @"SELECT * FROM ""Reservas"" WHERE @Now >= ""DataInicio"" AND @Now <= ""DataFim"";";
-                    parameters = new { Now = now };
-                    break;
-
-                case Status.FuturasProximas:
-                    sql = @"SELECT * FROM ""Reservas"" WHERE ""DataInicio"" > @Now AND ""DataInicio"" <= @TwentyFourHoursFromNow;";
-                    parameters = new { Now = now, TwentyFourHoursFromNow = now.AddHours(24) };
-                    break;
-
-                case Status.FuturasNormais:
-                    sql = @"SELECT * FROM ""Reservas"" WHERE ""DataInicio"" > @TwentyFourHoursFromNow;";
-                    parameters = new { TwentyFourHoursFromNow = now.AddHours(24) };
-                    break;
-
-                case Status.Encerradas:
-                    sql = @"SELECT * FROM ""Reservas"" WHERE ""DataFim"" < @Now;";
-                    parameters = new { Now = now };
-                    break;
-
-                default:
-                    return Enumerable.Empty<Reserva>();
+                whereClauses.Add("\"DataInicio\" >= @StartDate");
+                parameters.Add("StartDate", startDate.Value);
             }
 
-            return await _dbConnection.QueryAsync<Reserva>(sql, parameters);
+            if (endDate.HasValue)
+            {
+                whereClauses.Add("\"DataFim\" <= @EndDate");
+                parameters.Add("EndDate", endDate.Value);
+            }
+
+                var now = DateTime.Now;
+                parameters.Add("Now", now);
+
+                switch (status)
+                {
+                    case Status.EmAndamento:
+                        whereClauses.Add("(@Now >= \"DataInicio\" AND @Now <= \"DataFim\")");
+                        break;
+                    case Status.FuturasProximas:
+                        whereClauses.Add("(\"DataInicio\" > @Now AND \"DataInicio\" <= @TwentyFourHoursFromNow)");
+                        parameters.Add("TwentyFourHoursFromNow", now.AddHours(24));
+                        break;
+                    case Status.FuturasNormais:
+                        whereClauses.Add("(\"DataInicio\" > @TwentyFourHoursFromNow)");
+                        parameters.Add("TwentyFourHoursFromNow", now.AddHours(24));
+                        break;
+                    case Status.Encerradas:
+                        whereClauses.Add("(\"DataFim\" < @Now)");
+                        break;
+                }
+
+            if (whereClauses.Any())
+            {
+                var whereSql = " WHERE " + string.Join(" AND ", whereClauses);
+                countSql.Append(whereSql);
+                selectSql.Append(whereSql);
+            }
+
+            selectSql.Append(" ORDER BY \"DataInicio\" DESC OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY");
+            parameters.Add("Offset", (page - 1) * pageSize);
+            parameters.Add("PageSize", pageSize);
+
+            using (var multi = await _dbConnection.QueryMultipleAsync(countSql.ToString() + ";" + selectSql.ToString(), parameters))
+            {
+                var totalCount = await multi.ReadSingleAsync<int>();
+                var items = (await multi.ReadAsync<Reserva>()).ToList();
+
+                return new PagedResult<Reserva>
+                {
+                    Items = items,
+                    TotalCount = totalCount,
+                    TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+                };
+            }
         }
+
     }
 }

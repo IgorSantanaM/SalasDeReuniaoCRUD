@@ -4,9 +4,7 @@ using SalaDeReuniaoCRUD.Application.Features.Reservas.Commands.CreateReserva;
 using SalaDeReuniaoCRUD.Application.Features.Reservas.Commands.DeleteReserva;
 using SalaDeReuniaoCRUD.Application.Features.Reservas.Commands.UpdateReserva;
 using SalaDeReuniaoCRUD.Application.Features.Reservas.Queries.GetAllReservas;
-using SalaDeReuniaoCRUD.Application.Features.Reservas.Queries.GetReservaByDataRange;
 using SalaDeReuniaoCRUD.Application.Features.Reservas.Queries.GetReservaById;
-using SalaDeReuniaoCRUD.Application.Features.Reservas.Queries.GetReservaByStatus;
 using SalasDeReuniaoCRUD.Application.Features.Reservas.Commands.PatchReserva;
 using SalasDeReuniaoCRUD.Domain.Enums;
 using SalasDeReuniaoCRUD.WebApi.Endpoints.Internal;
@@ -41,7 +39,7 @@ namespace SalasDeReuniaoCRUD.WebApi.Endpoints
                 .WithName("GetReservas")
                 .Produces(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status500InternalServerError)
-                .WithSummary("Obtém todas as reservas")
+                .WithSummary("Obtém todas as reservas com seus filtros de range de data, status e paginação.")
                 .WithDescription("Obtém uma lista de todas as reservas.");
 
             group.MapDelete("/{id:int}", HandleDeleteReserva)
@@ -59,20 +57,6 @@ namespace SalasDeReuniaoCRUD.WebApi.Endpoints
                 .ProducesProblem(StatusCodes.Status500InternalServerError)
                 .WithSummary("Atualiza uma reserva")
                 .WithDescription("Atualiza os detalhes de uma reserva existente.");
-
-            group.MapGet("/by-date-range", HandleGetReservasByDateRange)
-                .WithName("GetReservasByDateRange")
-                .Produces(StatusCodes.Status200OK)
-                .ProducesProblem(StatusCodes.Status500InternalServerError)
-                .WithSummary("Obtém reservas por intervalo de datas")
-                .WithDescription("Obtém uma lista de reservas dentro de um intervalo de datas específico.");
-
-            group.MapGet("/by-status", HandleGetReservaByStatus)
-                .WithName("GetReservaByStatus")
-                .Produces(StatusCodes.Status200OK)
-                .ProducesProblem(StatusCodes.Status500InternalServerError)
-                .WithSummary("Obtém reservas por status")
-                .WithDescription("Obtém uma lista de reservas filtradas por status.");
 
             group.MapPatch("/{id:int}/desconto", HandlePatchDesconto)
                 .WithName("PatchDescontoReserva")
@@ -106,9 +90,14 @@ namespace SalasDeReuniaoCRUD.WebApi.Endpoints
         }
 
         private static async Task<IResult> HandleGetReservas(
-            [FromServices] IMediator mediator)
+            [FromServices] IMediator mediator,
+             [FromQuery] int page = 1,
+             [FromQuery] int pageSize = 10,
+             [FromQuery] Status? status = null,
+             [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
-            var query = new GetAllReservasQuery();
+            var query = new GetAllReservasQuery(status, startDate, endDate, page, pageSize);
             var reservas = await mediator.Send(query);
             return Results.Ok(reservas);
         }
@@ -125,21 +114,6 @@ namespace SalasDeReuniaoCRUD.WebApi.Endpoints
         {
             await mediator.Send(command);
             return Results.NoContent();
-        }
-
-        private static async Task<IResult> HandleGetReservasByDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromServices] IMediator mediator)
-        {
-            var query = new GetReservaByDateRangeQuery(startDate, endDate);
-            var reservas = await mediator.Send(query);
-            return Results.Ok(reservas);
-        }
-
-        private static async Task<IResult> HandleGetReservaByStatus(
-            [FromQuery] Status status, [FromServices] IMediator mediator)
-        {
-            var query = new GetReservaByStatusQuery(status);
-            var reservas = await mediator.Send(query);
-            return Results.Ok(reservas);
         }
 
         private static async Task<IResult> HandlePatchDesconto(

@@ -48,8 +48,8 @@ const ReservaCreation = () => {
         newErrors.valorHora = 'O valor por hora não pode ser negativo.';
     }
     
-    if (parseFloat(desconto) < 0) {
-        newErrors.desconto = 'O valor do desconto não pode ser negativo.';
+    if (parseFloat(desconto) < 0 || parseFloat(desconto) > 30) {
+        newErrors.desconto = 'O desconto deve ser um valor entre 0 e 30.';
     }
 
     setErrors(newErrors);
@@ -83,8 +83,8 @@ const ReservaCreation = () => {
 
       navigate('/');
     } catch (error) {
-      console.error("Erro ao cadastrar reserva:", error);
-      alert('Erro ao cadastrar reserva. Verifique o console.');
+      console.log(error);
+      toast.error("Já existe uma reserva para este horário e dia.")
     } finally {
       setIsSubmitting(false);
     }
@@ -141,7 +141,7 @@ const ReservaCreation = () => {
                   {errors.valorHora && <ErrorMessage>{errors.valorHora}</ErrorMessage>}
                 </FormGroup>
                 <FormGroup>
-                  <Label htmlFor="desconto">Desconto (R$)</Label>
+                  <Label htmlFor="desconto">Desconto (%)</Label>
                   <Input type="number" step="0.01" id="desconto" value={desconto} onChange={(e) => setDesconto(e.target.value)} className={errors.desconto ? 'error' : ''} />
                   {errors.desconto && <ErrorMessage>{errors.desconto}</ErrorMessage>}
                 </FormGroup>
