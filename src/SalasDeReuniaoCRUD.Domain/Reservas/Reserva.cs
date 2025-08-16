@@ -85,6 +85,14 @@ namespace SalasDeReuniaoCRUD.Domain.Reservas
             ValorTotal = CalcularValorTotal();
         }
 
+        public void AplicarDesconto(decimal percentualDesconto)
+        {
+            if (percentualDesconto < 0 || percentualDesconto > 30)
+                throw new DomainException("O percentual de desconto deve estar entre 0% e 30%.");
+            Desconto = percentualDesconto;
+            ValorTotal = CalcularValorTotal();
+        }
+
         private decimal CalcularValorTotal()
         {
             if (Desconto < 0 || Desconto > 30)

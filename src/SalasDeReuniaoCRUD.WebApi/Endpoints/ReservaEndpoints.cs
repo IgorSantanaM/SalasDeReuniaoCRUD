@@ -7,8 +7,10 @@ using SalaDeReuniaoCRUD.Application.Features.Reservas.Queries.GetAllReservas;
 using SalaDeReuniaoCRUD.Application.Features.Reservas.Queries.GetReservaByDataRange;
 using SalaDeReuniaoCRUD.Application.Features.Reservas.Queries.GetReservaById;
 using SalaDeReuniaoCRUD.Application.Features.Reservas.Queries.GetReservaByStatus;
+using SalasDeReuniaoCRUD.Application.Features.Reservas.Commands.PatchReserva;
 using SalasDeReuniaoCRUD.Domain.Enums;
 using SalasDeReuniaoCRUD.WebApi.Endpoints.Internal;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
 
 namespace SalasDeReuniaoCRUD.WebApi.Endpoints
@@ -71,6 +73,14 @@ namespace SalasDeReuniaoCRUD.WebApi.Endpoints
                 .ProducesProblem(StatusCodes.Status500InternalServerError)
                 .WithSummary("Obtém reservas por status")
                 .WithDescription("Obtém uma lista de reservas filtradas por status.");
+
+            group.MapPatch("/{id:int}/desconto", HandlePatchDesconto)
+                .WithName("PatchDescontoReserva")
+                .Produces(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status500InternalServerError)
+                .WithSummary("Atualiza o desconto de uma reserva")
+                .WithDescription("Atualiza o valor do desconto de uma reserva específica pelo Id.");
         }
 
         #region Handlers
@@ -130,6 +140,14 @@ namespace SalasDeReuniaoCRUD.WebApi.Endpoints
             var query = new GetReservaByStatusQuery(status);
             var reservas = await mediator.Send(query);
             return Results.Ok(reservas);
+        }
+
+        private static async Task<IResult> HandlePatchDesconto(
+            [FromRoute] int id, [FromBody] decimal desconto, [FromServices] IMediator mediator)
+        {
+            var command = new PatchReservaCommand(id, desconto);
+            var response = await mediator.Send(command);
+            return Results.Ok(response);
         }
 
         #endregion
