@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, PlusCircle, Edit, Trash2, Info, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, PlusCircle, Edit, Trash2, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
-import api from '../../services/api'; // Using the real API service
+import api from '../../services/api';
 import {
   PageContainer, PageHeader, TitleContainer, Title, PrimaryButton, Card,
   FilterContainer, Input, Select, Table, Th, Td, Tr, ActionButton,
   StatusBadge, EmptyState, EditInput, PaginationContainer, PaginationButton, PageInfo
 } from './styles';
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 
 const Reservas = () => {
   const navigate = useNavigate();
@@ -123,14 +123,12 @@ const Reservas = () => {
         handleCancelEdit(); 
     } catch (error) {
         console.error("Failed to update discount:", error);
-        toast.error("Erro ao atualizar o desconto.");
+        toast.error("Erro ao atualizar o desconto. ",  error);
     }
   };
 
 
-  // --- Client-side search for responsiveness ---
   const searchedReservas = useMemo(() => {
-    // Ensure reservas is an array before filtering
     if (!Array.isArray(reservas)) return [];
     if (!searchTerm) return reservas;
     return reservas.filter(reserva =>
@@ -161,7 +159,7 @@ const Reservas = () => {
     <PageContainer>
       <PageHeader>
         <TitleContainer>
-          <Calendar size={32} color="#4f46e5" />
+          <Calendar size={32} color="#4f46e5"  />
           <Title>Minhas Reservas</Title>
         </TitleContainer>
         <PrimaryButton onClick={() => navigate("/Reservas/Create")}>
@@ -223,7 +221,7 @@ const Reservas = () => {
                         autoFocus
                       />
                     ) : (
-                      reserva.desconto > 0 ? formatCurrency(reserva.desconto) : '-'
+                      reserva.desconto > 0 ? reserva.desconto + '%' : '-'
                     )}
                   </Td>
                   <Td>{formatCurrency(reserva.valorTotal)}</Td>
@@ -236,7 +234,6 @@ const Reservas = () => {
                         </>
                       ) : (
                         <>
-                          <ActionButton title="Detalhes da Reserva"><Info size={18} /></ActionButton>
                           <ActionButton title="Editar Reserva" onClick={() => handleEditClick(reserva)}><Edit size={18} /></ActionButton>
                           <ActionButton title="Excluir Reserva" onClick={() => deleteReserva(reserva.id)}><Trash2 size={18} /></ActionButton>
                         </>
