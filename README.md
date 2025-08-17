@@ -2,7 +2,7 @@
 
 Este é um guia completo para configurar e executar o ambiente de desenvolvimento do sistema de gerenciamento de reservas da prova prática da UCDB - Desenvolvedor.
 
-##  Prerequisites
+##  Pré-requisitos
 
 Antes de começar, certifique-se de que você tem as seguintes ferramentas instaladas em sua máquina:
 
