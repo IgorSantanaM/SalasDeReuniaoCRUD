@@ -89,6 +89,10 @@ namespace SalasDeReuniaoCRUD.Domain.Reservas
         {
             if (percentualDesconto < 0 || percentualDesconto > 30)
                 throw new DomainException("O percentual de desconto deve estar entre 0% e 30%.");
+
+            if (DataInicio <= DateTime.Now.ToLocalTime())
+                throw new DomainException("Somente reservas futuras próximas ou normais podem receber desconto!");
+
             Desconto = percentualDesconto;
             ValorTotal = CalcularValorTotal();
         }
