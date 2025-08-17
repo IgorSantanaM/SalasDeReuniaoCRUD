@@ -57,12 +57,16 @@ O backend é responsável por toda a lógica de negócio e comunicação com o b
 
 3.  **Executar a API**:
     Com as tabelas criadas, inicie o servidor da API. Por padrão, ele será executado na porta `8080`, conforme configurado no `launchSettings.json`.
-
+    
+    **Caso esteja na pasta root:**
     ```bash
-    dotnet run
+    dotnet run --project src/SalasDeReuniaoCRUD.WebApi/ --launch-profile https
     ```
-
-    A API agora estará rodando e pronta para receber requisições em `http://localhost:8080`.
+    **Caso esteja na pasta do projeto WebApi:**
+    ```bash
+    dotnet run --launch-profile https
+    ```
+    A API agora estará rodando e pronta para receber requisições em `https://localhost:8080`.
 
 ---
 
@@ -87,7 +91,7 @@ O frontend é a interface com a qual o usuário interage, construída em React.
     yarn dev
     ```
 
-    Isso abrirá automaticamente uma aba no seu navegador com a aplicação rodando em `http://localhost:5173`. A aplicação React fará as chamadas para a API .NET que está rodando em `localhost:8080`.
+    Isso abrirá automaticamente uma aba no seu navegador com a aplicação rodando em `http://localhost:5173`. A aplicação React fará as chamadas para a API .NET que está rodando em `https://localhost:8080`.
 
 ---
 
