@@ -31,11 +31,11 @@ namespace SalasDeReuniaoCRUD.Application.Features.Reservas.Commands.PatchReserva
             reserva.AplicarDesconto(request.Desconto);
             _reservaRepository.Update(reserva);
             await _unitOfWork.SaveChangesAsync();
-            return new ReservaDto(request.Id,
+            return new ReservaDto(reserva.Id,
                                 reserva.Titulo,
                                 reserva.Responsavel,
-                                reserva.DataInicio.ToLocalTime(), 
-                                reserva.DataFim.ToLocalTime(),
+                                reserva.DataInicio, 
+                                reserva.DataFim,
                                 reserva.ParticipantesPrevistos, 
                                 reserva.ValorTotal,
                                 reserva.Desconto,

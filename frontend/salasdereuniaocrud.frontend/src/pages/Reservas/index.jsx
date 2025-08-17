@@ -122,8 +122,7 @@ const Reservas = () => {
         toast.success("Desconto atualizado com sucesso!");
         handleCancelEdit(); 
     } catch (error) {
-        console.error("Failed to update discount:", error);
-        toast.error("Erro ao atualizar o desconto. ",  error);
+        toast.error("Somente reservas futuras próximas ou normais podem receber desconto!",  error);
     }
   };
 
