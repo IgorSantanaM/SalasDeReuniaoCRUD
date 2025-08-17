@@ -58,8 +58,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "StockMode API V1");
-        options.DocumentTitle = "StockMode API Documentation";
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "SalasDeReuniaoCRUD API V1");
+        options.DocumentTitle = "SalasDeReuniaoCRUD API Documentation";
         options.DefaultModelExpandDepth(-1);
     });
 }
