@@ -8,7 +8,7 @@ Antes de começar, certifique-se de que você tem as seguintes ferramentas insta
 
 - **Docker**: Para executar o banco de dados PostgreSQL em um contêiner.
 - **.NET SDK**: (Versão 9) Para compilar e executar a API backend.
-- **Node.js e Yarn*[*: Para gerenciar as dependências e executar o projeto frontend em React.
+- **Node.js e Yarn**: Para gerenciar as dependências e executar o projeto frontend em React.
 
 ---
 
@@ -84,7 +84,7 @@ O frontend é a interface com a qual o usuário interage, construída em React.
     Após a instalação, inicie o servidor de desenvolvimento do React.
 
     ```bash
-    yarn start
+    yarn dev
     ```
 
     Isso abrirá automaticamente uma aba no seu navegador com a aplicação rodando em `http://localhost:5173`. A aplicação React fará as chamadas para a API .NET que está rodando em `localhost:8080`.
@@ -99,4 +99,4 @@ Ao final desses três passos, você terá:
 2.  O servidor **backend .NET** rodando na porta `8080`.
 3.  A aplicação **frontend React** rodando na porta `5173`.
 
-Agora o ambiente de desenvolvimento está completo e pronto para a prova!
+Agora o ambiente de desenvolvimento está completo e pronto para uso!
