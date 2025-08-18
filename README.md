@@ -50,7 +50,7 @@ O backend é responsável por toda a lógica de negócio e comunicação com o b
     A API utiliza o Entity Framework Core para gerenciar o esquema do banco de dados. Para criar as tabelas necessárias, execute o comando de atualização do banco de dados. Certifique-se de que o projeto da WebApi esteja definido como projeto de inicialização.
 
     ```bash
-    dotnet ef database update
+    dotnet ef database update --project src/SalasDeReuniaoCRUD.Infra.Data/ --startup-project src/SalasDeReuniaoCRUD.WebApi/
     ```
 
     *Observação: Se o comando `dotnet ef` não for reconhecido, instale-o globalmente com `dotnet tool install --global dotnet-ef`.*
