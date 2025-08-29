@@ -60,6 +60,9 @@ O backend é responsável por toda a lógica de negócio e comunicação com o b
     
     **Caso esteja na pasta root:**
     ```bash
+        dotnet build --project src/SalasDeReuniaoCRUD.WebApi/ --launch-profile https
+    ```
+    ```bash
     dotnet run --project src/SalasDeReuniaoCRUD.WebApi/ --launch-profile https
     ```
     **Caso esteja na pasta do projeto WebApi:**
